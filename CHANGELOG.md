@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-30
+
 ### Added
 
 - The food markets (open-air, covered, organic, producers) of Paris, Toulouse
@@ -26,3 +28,6 @@ the notes of the version's GitHub Release.
 - Dashboard widget "Markets today": up to 10 markets held today around the
   house, open until when, distance.
 - Texts and documentation in English, French, German and Spanish.
+
+[Unreleased]: https://github.com/guim31/gladys-marches/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/guim31/gladys-marches/releases/tag/v1.0.0
