@@ -79,8 +79,7 @@ La integración calcula los valores cada minuto, sin ninguna petición.
 
 Añada el widget **Mercados de hoy** a un panel: una fila por mercado de hoy alrededor de la casa (10
 como máximo, los más cercanos primero), con «abierto hasta las 13:30 · 0,4 km», «termina en 20 min»,
-«desde las 16:00» o «terminado a las 13:30». Sin casa ubicada, muestra los mercados añadidos a
-Gladys. El ajuste **Mostrar la distancia** oculta la distancia.
+«desde las 16:00» o «terminado a las 13:30». Los mercados añadidos a Gladys más lejanos siguen a los cercanos; sin casa ubicada, muestra los mercados añadidos a Gladys. El ajuste **Mostrar la distancia** oculta la distancia.
 
 ## Disparadores de escena
 

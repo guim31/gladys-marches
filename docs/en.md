@@ -63,13 +63,13 @@ last read and the errors.
 
 ## Devices
 
-| Feature       | Type   | Value                                                       |
-| ------------- | ------ | ----------------------------------------------------------- |
-| Market today  | binary | 1 when the market is held today                             |
-| Open now      | binary | 1 open, 0 not; no value when the hours cannot be read       |
-| Ends today at | text   | "13:30", "No market today", "13:30 (public holiday: check)" |
-| Next market   | text   | "today at 16:00", "tomorrow at 07:00", "Saturday at 07:30"  |
-| Market days   | text   | "Wed 07:00–13:30 · Sat 07:00–14:30"                         |
+| Feature        | Type   | Value                                                       |
+| -------------- | ------ | ----------------------------------------------------------- |
+| Market today   | binary | 1 when the market is held today                             |
+| Open now       | binary | 1 open, 0 not; no value when the hours cannot be read       |
+| End time today | text   | "13:30", "No market today", "13:30 (public holiday: check)" |
+| Next market    | text   | "today at 16:00", "tomorrow at 07:00", "Saturday at 07:30"  |
+| Market days    | text   | "Wed 07:00–13:30 · Sat 07:00–14:30"                         |
 
 The values are computed every minute by the integration, without any request.
 
@@ -77,7 +77,7 @@ The values are computed every minute by the integration, without any request.
 
 Add the **Markets today** widget to a dashboard: one row per market held today around the house (10
 at most, nearest first), with "open until 13:30 · 0.4 km", "ends in 20 min", "from 16:00" or "ended
-at 13:30". Without a located house, it shows the markets added to Gladys. The setting **Show the
+at 13:30". The markets added to Gladys farther away follow the near ones; without a located house, it shows the markets added to Gladys. The setting **Show the
 distance** hides the distance.
 
 ## Scene triggers

@@ -78,7 +78,7 @@ Die Werte berechnet die Integration jede Minute, ohne jede Anfrage.
 
 Füge das Widget **Märkte heute** einem Dashboard hinzu: eine Zeile pro heutigem Markt rund ums Haus
 (höchstens 10, die nächsten zuerst), mit „geöffnet bis 13:30 · 0,4 km“, „endet in 20 Min.“, „ab
-16:00“ oder „beendet um 13:30“. Ohne Standort des Hauses zeigt es die zu Gladys hinzugefügten Märkte.
+16:00“ oder „beendet um 13:30“. Weiter entfernte, zu Gladys hinzugefügte Märkte folgen nach den nahen; ohne Standort des Hauses zeigt es die zu Gladys hinzugefügten Märkte.
 Die Einstellung **Entfernung anzeigen** blendet die Entfernung aus.
 
 ## Szenenauslöser

@@ -31,6 +31,7 @@ export function rowColor(view) {
 
 async function todayContent(service, { settings, language }) {
   await service.firstReading();
+  await service.locateHouse();
   const today = service.marketsToday();
   if (!today || today.entries.length === 0) {
     return {

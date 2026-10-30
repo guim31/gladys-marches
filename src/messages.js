@@ -17,7 +17,7 @@ export const NAMES = {
   en: {
     today: 'Market today',
     open: 'Open now',
-    ends: 'Ends today at',
+    ends: 'End time today',
     next: 'Next market',
     days: 'Market days',
   },

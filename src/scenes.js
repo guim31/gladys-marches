@@ -19,6 +19,7 @@ export const SCENE_ACTIONS = {
     const language = service.config.language;
     // Asked right at start: the first reading, not "nothing".
     await service.firstReading();
+    await service.locateHouse();
     const today = service.marketsToday();
     if (!today) {
       throw new SceneError(say(TEXT, language, 'noHouse'));

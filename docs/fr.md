@@ -81,8 +81,7 @@ Les valeurs sont calculées chaque minute par l'intégration, sans aucune requê
 
 Ajoutez le widget **Marchés du jour** à un tableau de bord : une ligne par marché du jour autour de
 la maison (10 au plus, du plus proche au plus loin), avec « ouvert jusqu'à 13:30 · 0,4 km », « finit
-dans 20 min », « à partir de 16:00 » ou « terminé à 13:30 ». Sans maison localisée, il montre les
-marchés ajoutés à Gladys. Le réglage **Afficher la distance** masque la distance.
+dans 20 min », « à partir de 16:00 » ou « terminé à 13:30 ». Les marchés ajoutés à Gladys plus loin suivent les plus proches ; sans maison localisée, il montre les marchés ajoutés à Gladys. Le réglage **Afficher la distance** masque la distance.
 
 ## Déclencheurs de scène
 

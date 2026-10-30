@@ -62,8 +62,8 @@ export const slug = (value) =>
     .replace(/^-|-$/g, '');
 
 /** "Arnaud Bernard" → "Marché Arnaud Bernard"; "Marche de l'Hers" → "Marché de l'Hers". */
-const marketName = (name) =>
-  /^march[eé]\b/i.test(name) ? name.replace(/^march[eé]/i, 'Marché') : `Marché ${name}`;
+export const marketName = (name) =>
+  /^march[eé](?!\p{L})/iu.test(name) ? name.replace(/^march[eé]/iu, 'Marché') : `Marché ${name}`;
 
 const number = (value) => (Number.isFinite(Number(value)) && value !== null ? Number(value) : null);
 
@@ -110,6 +110,8 @@ export const SOURCES = [
   {
     id: 'paris',
     name: 'Paris',
+    // The town hall: a house this far from it cannot have a market nearby.
+    center: { lat: 48.8566, lon: 2.3522 },
     department: '75',
     url: records('https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/marches-decouverts', [
       'id_marche',
@@ -174,6 +176,7 @@ export const SOURCES = [
   {
     id: 'toulouse',
     name: 'Toulouse',
+    center: { lat: 43.6045, lon: 1.4442 },
     department: '31',
     url: records(
       'https://data.toulouse-metropole.fr/api/explore/v2.1/catalog/datasets/marches-couverts-et-de-plein-vent',
@@ -224,6 +227,7 @@ export const SOURCES = [
   {
     id: 'strasbourg',
     name: 'Strasbourg',
+    center: { lat: 48.5734, lon: 7.7521 },
     department: '67',
     url: records(
       'https://data.strasbourg.eu/api/explore/v2.1/catalog/datasets/sites-marches-d-approvisionnement',
@@ -273,20 +277,35 @@ export const SOURCE_IDS = SOURCES.map((source) => source.id);
 export const sourceOf = (id) => SOURCES.find((source) => source.id === id) ?? null;
 
 /** The food markets of a source: one request. */
+// Opendatasoft serves 100 records per request at most; a few pages are read
+// before giving up, so a growing dataset keeps working.
+const PAGE = 100;
+const MAX_PAGES = 5;
+
+/** The food markets of a source: one request per page of 100 (one today). */
 export async function readSource(fetchImpl, source) {
-  const body = await getJson(fetchImpl, source.url, { maxBytes: 2e6 });
-  // An empty or unexpected answer is a failure: the last good read is kept.
-  if (!Array.isArray(body?.results) || body.results.length === 0) {
-    throw new HttpError(`${hostOf(source.url)}: no record`);
+  const results = [];
+  for (let page = 0; page < MAX_PAGES; page += 1) {
+    const url = page === 0 ? source.url : `${source.url}&offset=${page * PAGE}`;
+    const body = await getJson(fetchImpl, url, { maxBytes: 2e6 });
+    // An empty or unexpected answer is a failure: the last good read is kept.
+    if (!Array.isArray(body?.results) || (page === 0 && body.results.length === 0)) {
+      throw new HttpError(`${hostOf(source.url)}: no record`);
+    }
+    results.push(...body.results);
+    const total = Number(body.total_count);
+    if (!(total > results.length) || body.results.length === 0) {
+      // A short answer against a larger total is a truncated read.
+      if (total > results.length) {
+        throw new HttpError(`${hostOf(source.url)}: ${results.length} of ${total} records`);
+      }
+      return source.toMarkets(
+        source,
+        results.filter((record) => record && typeof record === 'object'),
+      );
+    }
   }
-  // One page of 100: the sources hold a few dozen markets. More would be cut.
-  if (Number(body.total_count) > body.results.length) {
-    throw new HttpError(`${hostOf(source.url)}: more than ${body.results.length} records`);
-  }
-  return source.toMarkets(
-    source,
-    body.results.filter((record) => record && typeof record === 'object'),
-  );
+  throw new HttpError(`${hostOf(source.url)}: more than ${PAGE * MAX_PAGES} records`);
 }
 
 /** Distance in km between two points (haversine). */

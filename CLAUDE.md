@@ -285,3 +285,9 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - **Déclencheurs** : `opened`, `closing_soon` (seuil `closing_notice`), `market_tomorrow` au passage de
   `evening_hour` la veille d'un jour tenu ; rien après un écart de plus de 5 min ni après un changement
   des jours publiés (`signature`).
+- **Relecture du 30/10** : `\b` d'une regex JS ne connaît pas « é » (`/^marché\b/` ne trouve pas « Marché de ») :
+  `(?!\p{L})` avec le drapeau `u`. Lecture par pages de 100 (`offset`, 5 pages au plus) ; une réponse plus
+  courte que `total_count` reste un échec. Une ville lue seulement parce que la maison est localisée, mais à
+  plus de `max_distance` + 20 km de son centre, n'est ni relancée toutes les heures ni montrée dans « État ».
+  Widget et action de scène relisent la maison quand elle n'était pas localisée (sinon un jour d'attente) ; les
+  marchés ajoutés plus loin que `max_distance` suivent les marchés proches.

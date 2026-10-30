@@ -6,7 +6,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { statusAt, weekOf } from '../src/hours.js';
-import { SOURCES, parseFrenchRange, slug, titleCase } from '../src/sources.js';
+import { SOURCES, marketName, parseFrenchRange, slug, titleCase } from '../src/sources.js';
 import { fixtureJson, paris } from './helpers/world.js';
 
 const marketsOf = (id) => {
@@ -102,6 +102,11 @@ test('Strasbourg: one record per day, grouped by market code', () => {
 test('names and ids', () => {
   assert.equal(titleCase("MARCHÉ JEANNE D'ARC"), "Marché Jeanne d'Arc");
   assert.equal(slug('Saint  Étienne'), 'saint-etienne');
+  // "Marché" is never doubled, accented or not.
+  assert.equal(marketName("Marché de l'Église"), "Marché de l'Église");
+  assert.equal(marketName("Marche de l'Hers"), "Marché de l'Hers");
+  assert.equal(marketName('Marchéville'), 'Marché Marchéville');
+  assert.equal(marketName('Cristal'), 'Marché Cristal');
 });
 
 test('held today, open, until when, next market at an instant', () => {

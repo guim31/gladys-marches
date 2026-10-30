@@ -71,8 +71,9 @@ test('around a located house: the nearest markets within the distance, every sou
   assert.equal(world.network.calls.length, 3);
   const message = await action(world, 'status');
   assert.match(message.fr, /les 3 marchés les plus proches à moins de 5 km/);
-  assert.match(message.fr, /■ Paris : 72 marchés alimentaires/);
   assert.match(message.fr, /■ Toulouse : 45 marchés alimentaires/);
+  // Paris and Strasbourg are read, but too far to matter.
+  assert.doesNotMatch(message.fr, /Paris|Strasbourg/);
   assert.match(message.fr, /3 marchés dans l'onglet Découverte/);
 });
 
@@ -292,4 +293,64 @@ test('the language of the configuration changes the texts, not the frozen names'
   await world.service.refresh();
   assert.equal(lastState(world, victor, 'next'), 'mañana a las 07:00');
   assert.equal(victor.features[0].name, "Marché aujourd'hui");
+});
+
+test('a dataset larger than one page is read page by page', async (t) => {
+  const world = await createWorld({ connect: false });
+  t.after(() => world.app.stop());
+  const all = world.network.routes[urlOf('toulouse')].results;
+  world.network.routes[urlOf('toulouse')] = { total_count: 150, results: all.slice(0, 40) };
+  world.network.routes[`${urlOf('toulouse')}&offset=100`] = {
+    total_count: 150,
+    results: all.slice(40),
+  };
+  // 40 + 18 of the 150 announced: still short, a failure.
+  await world.gladys.connect();
+  await world.app.ready;
+  await world.service.loading;
+  assert.equal(world.service.failing, true);
+  world.network.routes[urlOf('toulouse')] = { total_count: 58, results: all.slice(0, 40) };
+  world.network.routes[`${urlOf('toulouse')}&offset=100`] = { total_count: 58, results: [] };
+  await world.service.refresh();
+  assert.equal(world.service.failing, true);
+});
+
+test('a house located after the start is found by the widget, without waiting a day', async (t) => {
+  const world = await createWorld({ config: { areas: [], nearest_count: 3 } });
+  t.after(() => world.app.stop());
+  assert.equal(world.network.calls.length, 0);
+  // The user sets the location of the house in Gladys.
+  world.fake.houses.push(structuredClone(HOUSE));
+  const content = (await world.fake.widgetGet('today', { language: 'fr' })).data.content;
+  assert.equal(content.components[0].items.length, 10);
+  assert.equal(world.network.calls.length, 3);
+});
+
+test('around the house, a market added farther away is kept after the near ones', async (t) => {
+  const world = await createWorld({
+    config: { areas: ['paris'], nearest_count: 0, max_distance: 1 },
+    houses: [HOUSE],
+  });
+  t.after(() => world.app.stop());
+  // Wednesday: Charonne (Paris) is held, 590 km from the house in Toulouse.
+  await at(world, paris('2026-11-04 09:00'));
+  await create(world, 'Charonne');
+  const answer = await world.fake.sceneAction('markets_today', {});
+  assert.match(
+    answer.data.outputs.sentence,
+    /Marché Charonne \(07:00–13:30, ouvert, 5\d\d km\)\.$/,
+  );
+});
+
+test('a city far from the house that fails is not read again every hour', async (t) => {
+  const world = await createWorld({ config: { areas: [], nearest_count: 3 }, houses: [HOUSE] });
+  t.after(() => world.app.stop());
+  world.network.routes[urlOf('strasbourg')] = 503;
+  await world.service.refresh();
+  assert.equal(world.service.failing, false);
+  const message = await action(world, 'status');
+  assert.doesNotMatch(message.en, /Strasbourg/);
+  world.network.routes[urlOf('toulouse')] = 503;
+  await world.service.refresh();
+  assert.equal(world.service.failing, true);
 });

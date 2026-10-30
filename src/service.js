@@ -321,6 +321,39 @@ export class Markets {
     }
   }
 
+  /**
+   * The house was not located at the last read: ask again (it may have been
+   * set since), and read the sources at once when it now is. For the widget
+   * and the scene action, which would otherwise wait for the daily read.
+   */
+  async locateHouse() {
+    if (this.house) {
+      return;
+    }
+    await this.readHouse();
+    if (this.house) {
+      this.loading = this.refresh({ discover: true });
+      await this.firstReading();
+    }
+  }
+
+  /**
+   * A source worth retrying within the hour: a city ticked, a market added,
+   * or a city near enough to the house to hold one of its markets.
+   */
+  isRelevant(source) {
+    if (this.config.areas.includes(source.id)) {
+      return true;
+    }
+    if (this.watched().some(({ key }) => sourceIdOf(key) === source.id)) {
+      return true;
+    }
+    // Paris, the widest of the three, spreads 10 km around its town hall.
+    return (
+      Boolean(this.house) && distanceKm(this.house, source.center) <= this.config.maxDistanceKm + 20
+    );
+  }
+
   /** The sources to read: cities ticked, markets added, all of them around a located house. */
   neededSources() {
     const wanted = new Set(this.config.areas);
@@ -360,7 +393,10 @@ export class Markets {
           logger.warn(`${source.name} unavailable: ${err.message}`);
         }
         area.error = err.message;
-        failures.push(source.id);
+        // A city far from the house is read again tomorrow, not every hour.
+        if (this.isRelevant(source)) {
+          failures.push(source.id);
+        }
       }
     }
     this.failing = failures.length > 0;
@@ -529,7 +565,8 @@ export class Markets {
 
   /**
    * The markets held today: around the located house (nearest first, within
-   * the distance of the configuration), or else the markets added to Gladys.
+   * the distance of the configuration) plus the markets added to Gladys, or
+   * the markets added alone without a located house.
    * @returns {{ around: boolean, entries: { market, name, km }[] }|null} null
    *   without a located house nor any market added
    */
@@ -539,6 +576,15 @@ export class Markets {
     let around = true;
     if (this.house) {
       entries = this.nearby();
+      const near = new Set(entries.map(({ market }) => market.key));
+      // A market added farther away (a market near work) is kept, after the near ones.
+      const added = [...names.keys()]
+        .filter((key) => !near.has(key))
+        .map((key) => this.markets.get(key))
+        .filter((market) => market?.schedule && market.lat !== null && market.lon !== null)
+        .map((market) => ({ market, km: distanceKm(this.house, market) }))
+        .sort((a, b) => a.km - b.km);
+      entries = [...entries, ...added];
     } else if (names.size > 0) {
       around = false;
       entries = [...names.keys()]
@@ -610,7 +656,11 @@ export class Markets {
     if (this.config.areas.length === 0 && !this.house) {
       blocks.push(render(REPORTS, 'noArea'));
     }
-    const needed = new Set(this.neededSources().map((source) => source.id));
+    const needed = new Set(
+      this.neededSources()
+        .filter((source) => this.isRelevant(source))
+        .map((source) => source.id),
+    );
     for (const [id, area] of [...this.areas].filter(([key]) => needed.has(key))) {
       const name = sourceOf(id).name;
       if (area.error) {
