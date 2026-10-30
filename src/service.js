@@ -36,6 +36,8 @@ export const MAX_GAP_MS = 5 * 60 * 1000;
 export const CLOSING_SOON_MINUTES = 30;
 // Markets of the day in the widget and the scene sentence.
 export const MAX_AROUND = 10;
+// The house location asked again, when it was missing, at most this often.
+export const HOUSE_RETRY_MS = 5 * 60 * 1000;
 
 export const TRIGGERS = {
   OPENED: 'opened',
@@ -327,9 +329,11 @@ export class Markets {
    * and the scene action, which would otherwise wait for the daily read.
    */
   async locateHouse() {
-    if (this.house) {
+    // At most every 5 minutes: the widget asks every minute.
+    if (this.house || this.now() - (this.houseAskedAt ?? -Infinity) < HOUSE_RETRY_MS) {
       return;
     }
+    this.houseAskedAt = this.now();
     await this.readHouse();
     if (this.house) {
       this.loading = this.refresh({ discover: true });
@@ -581,9 +585,13 @@ export class Markets {
       const added = [...names.keys()]
         .filter((key) => !near.has(key))
         .map((key) => this.markets.get(key))
-        .filter((market) => market?.schedule && market.lat !== null && market.lon !== null)
-        .map((market) => ({ market, km: distanceKm(this.house, market) }))
-        .sort((a, b) => a.km - b.km);
+        .filter((market) => market?.schedule)
+        .map((market) => ({
+          market,
+          km: market.lat !== null && market.lon !== null ? distanceKm(this.house, market) : null,
+        }))
+        // Without coordinates: last.
+        .sort((a, b) => (a.km ?? Infinity) - (b.km ?? Infinity));
       entries = [...entries, ...added];
     } else if (names.size > 0) {
       around = false;

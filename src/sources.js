@@ -276,7 +276,6 @@ export const SOURCES = [
 export const SOURCE_IDS = SOURCES.map((source) => source.id);
 export const sourceOf = (id) => SOURCES.find((source) => source.id === id) ?? null;
 
-/** The food markets of a source: one request. */
 // Opendatasoft serves 100 records per request at most; a few pages are read
 // before giving up, so a growing dataset keeps working.
 const PAGE = 100;
