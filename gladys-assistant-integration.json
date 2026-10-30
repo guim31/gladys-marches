@@ -1,177 +1,526 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Marchés",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Food markets of Paris, Toulouse, Strasbourg: held today, open now, until when, next market day.",
+    "fr": "Marchés de Paris, Toulouse, Strasbourg : marché aujourd'hui, ouvert, jusqu'à quand, prochain jour.",
+    "de": "Märkte in Paris, Toulouse, Straßburg: Markt heute, jetzt geöffnet, bis wann, nächster Markttag.",
+    "es": "Mercados de Paris, Toulouse, Estrasburgo: hoy, abierto ahora, hasta cuándo, próximo día de mercado."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
-  "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "docker_image": "ghcr.io/guim31/gladys-marches:1.0.0",
+  "gladys_version": ">=5.3.0",
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-marches/main/cover.png",
+  "categories": ["services", "leisure"],
+  "transports": ["cloud"],
+  "countries": ["FR"],
+  "keywords": [
+    "marché",
+    "marchés",
+    "marché alimentaire",
+    "plein vent",
+    "marché couvert",
+    "bio",
+    "Paris",
+    "Toulouse",
+    "Strasbourg",
+    "open data"
+  ],
+  "location": true,
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
-      "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+      "label": {
+        "en": "How it works",
+        "fr": "Fonctionnement",
+        "de": "So funktioniert es",
+        "es": "Funcionamiento"
       },
-      "links": [
+      "description": {
+        "en": "Tick your city, or let the integration offer the markets nearest to your house, then save: they appear in the Discover tab. Days and hours come from the open data of the cities: no account, no key. Public holidays and exceptional closures are not published: check before going.",
+        "fr": "Cochez votre ville, ou laissez l'intégration proposer les marchés les plus proches de votre maison, puis enregistrez : ils apparaissent dans l'onglet Découverte. Jours et horaires : open data des villes, sans compte ni clé. Fériés et annulations ne sont pas publiés : vérifiez avant d'y aller.",
+        "de": "Kreuze deine Stadt an oder lass die Integration die Märkte nahe deinem Haus anbieten, dann speichere: Die Märkte erscheinen im Tab „Entdecken“. Tage und Zeiten stammen aus den offenen Daten der Städte: ohne Konto, ohne Schlüssel. Feiertage und Ausfälle werden nicht veröffentlicht: prüfe sie vorher.",
+        "es": "Marque su ciudad, o deje que la integración proponga los mercados más cercanos a su casa, y luego guarde: aparecen en la pestaña Descubrir. Días y horarios proceden de los datos abiertos de las ciudades: sin cuenta ni clave. Festivos y cancelaciones no se publican: compruébelo antes de ir."
+      }
+    },
+    {
+      "key": "areas",
+      "type": "multi_select",
+      "default": [],
+      "required": false,
+      "label": {
+        "en": "Cities",
+        "fr": "Villes",
+        "de": "Städte",
+        "es": "Ciudades"
+      },
+      "description": {
+        "en": "Every food market of the cities ticked is offered.",
+        "fr": "Tous les marchés alimentaires des villes cochées sont proposés.",
+        "de": "Alle Lebensmittelmärkte der angekreuzten Städte werden angeboten.",
+        "es": "Se proponen todos los mercados de alimentación de las ciudades marcadas."
+      },
+      "options": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "value": "paris",
+          "label": {
+            "en": "Paris",
+            "fr": "Paris",
+            "de": "Paris",
+            "es": "París"
+          }
+        },
+        {
+          "value": "toulouse",
+          "label": {
+            "en": "Toulouse",
+            "fr": "Toulouse",
+            "de": "Toulouse",
+            "es": "Toulouse"
+          }
+        },
+        {
+          "value": "strasbourg",
+          "label": {
+            "en": "Strasbourg",
+            "fr": "Strasbourg",
+            "de": "Straßburg",
+            "es": "Estrasburgo"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
+      "key": "nearest_count",
       "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "default": 3,
+      "min": 0,
+      "max": 10,
+      "required": false,
+      "label": {
+        "en": "Nearest markets",
+        "fr": "Marchés les plus proches",
+        "de": "Nächste Märkte",
+        "es": "Mercados más cercanos"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "Also offer this many markets nearest to the house (its location in Gladys), 0 to turn off.",
+        "fr": "Propose aussi ce nombre de marchés les plus proches de la maison (sa position dans Gladys), 0 pour désactiver.",
+        "de": "Biete zusätzlich so viele Märkte nahe dem Haus an (sein Standort in Gladys), 0 zum Abschalten.",
+        "es": "Proponer también este número de mercados más cercanos a la casa (su ubicación en Gladys), 0 para desactivar."
+      }
     },
     {
-      "key": "longitude",
+      "key": "max_distance",
       "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "default": 5,
+      "min": 1,
+      "max": 50,
+      "required": false,
+      "label": {
+        "en": "Maximum distance (km)",
+        "fr": "Distance maximale (km)",
+        "de": "Maximale Entfernung (km)",
+        "es": "Distancia máxima (km)"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "description": {
+        "en": "As the crow flies, from the house: nearest markets, widget and scene sentence.",
+        "fr": "À vol d'oiseau, depuis la maison : marchés proposés, widget et phrase de scène.",
+        "de": "Luftlinie, vom Haus aus: angebotene Märkte, Widget und Szenensatz.",
+        "es": "En línea recta, desde la casa: mercados propuestos, widget y frase de escena."
+      }
     },
     {
-      "key": "unit",
+      "key": "closing_notice",
+      "type": "number",
+      "default": 30,
+      "min": 5,
+      "max": 180,
+      "required": false,
+      "label": {
+        "en": "Ends soon (minutes)",
+        "fr": "Fin prochaine (minutes)",
+        "de": "Endet bald (Minuten)",
+        "es": "Fin próximo (minutos)"
+      },
+      "description": {
+        "en": "Minutes before the end of the \"market ends soon\" scene trigger.",
+        "fr": "Minutes avant la fin pour le déclencheur de scène « Un marché finit bientôt ».",
+        "de": "Minuten vor dem Ende für den Szenenauslöser „Ein Markt endet bald“.",
+        "es": "Minutos antes del fin para el disparador de escena «Un mercado termina pronto»."
+      }
+    },
+    {
+      "key": "evening_hour",
+      "type": "number",
+      "default": 19,
+      "min": 12,
+      "max": 23,
+      "required": false,
+      "label": {
+        "en": "\"Market tomorrow\" hour",
+        "fr": "Heure de « Marché demain »",
+        "de": "Uhrzeit für „Markt morgen“",
+        "es": "Hora de «Mercado mañana»"
+      },
+      "description": {
+        "en": "Hour of the day before a market day when the \"market tomorrow\" trigger fires.",
+        "fr": "Heure, la veille d'un jour de marché, du déclencheur « Marché demain ».",
+        "de": "Stunde am Vortag eines Markttags, zu der der Auslöser „Markt morgen“ auslöst.",
+        "es": "Hora, la víspera de un día de mercado, del disparador «Mercado mañana»."
+      }
+    },
+    {
+      "key": "language",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
-      "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
-      ]
-    },
-    {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
-      "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+      "default": "fr",
+      "label": {
+        "en": "Language of names and messages",
+        "fr": "Langue des noms et des messages",
+        "de": "Sprache der Namen und Meldungen",
+        "es": "Idioma de los nombres y mensajes"
       },
-      "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "description": {
+        "en": "Feature names are fixed when a device is added.",
+        "fr": "Les noms des fonctionnalités sont figés à l'ajout d'un appareil.",
+        "de": "Die Namen der Funktionen werden beim Hinzufügen eines Geräts festgelegt.",
+        "es": "Los nombres de las funciones se fijan al añadir un dispositivo."
+      },
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
+      "key": "status",
+      "label": {
+        "en": "Status",
+        "fr": "État",
+        "de": "Status",
+        "es": "Estado"
+      },
+      "description": {
+        "en": "Cities read, markets offered, last read and errors.",
+        "fr": "Villes lues, marchés proposés, dernière lecture et erreurs.",
+        "de": "Gelesene Städte, angebotene Märkte, letzte Abfrage und Fehler.",
+        "es": "Ciudades leídas, mercados propuestos, última lectura y errores."
+      },
+      "timeout_seconds": 30,
+      "fields": []
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "opened",
+      "label": {
+        "en": "Market opens",
+        "fr": "Un marché ouvre",
+        "de": "Ein Markt öffnet",
+        "es": "Un mercado abre"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A market added to Gladys opens, according to its published hours.",
+        "fr": "Un marché ajouté à Gladys ouvre, d'après ses horaires publiés.",
+        "de": "Ein zu Gladys hinzugefügter Markt öffnet, laut seinen veröffentlichten Zeiten.",
+        "es": "Un mercado añadido a Gladys abre, según su horario publicado."
       },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
+          "key": "market",
           "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "source": "devices",
+          "required": false,
+          "label": {
+            "en": "Markets",
+            "fr": "Marchés",
+            "de": "Märkte",
+            "es": "Mercados"
+          },
+          "description": {
+            "en": "Empty: any market added to Gladys.",
+            "fr": "Vide : n'importe quel marché ajouté à Gladys.",
+            "de": "Leer: jeder zu Gladys hinzugefügte Markt.",
+            "es": "Vacío: cualquier mercado añadido a Gladys."
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "market_name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Market",
+            "fr": "Marché",
+            "de": "Markt",
+            "es": "Mercado"
+          }
+        },
+        {
+          "key": "ends_at",
+          "type": "string",
+          "label": {
+            "en": "End time (HH:MM)",
+            "fr": "Heure de fin (HH:MM)",
+            "de": "Ende (HH:MM)",
+            "es": "Hora de fin (HH:MM)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "closing_soon",
+      "label": {
+        "en": "Market ends soon",
+        "fr": "Un marché finit bientôt",
+        "de": "Ein Markt endet bald",
+        "es": "Un mercado termina pronto"
+      },
+      "description": {
+        "en": "A market added to Gladys ends within the minutes set in the configuration (30 by default).",
+        "fr": "Un marché ajouté à Gladys finit dans le nombre de minutes réglé dans la configuration (30 par défaut).",
+        "de": "Ein zu Gladys hinzugefügter Markt endet innerhalb der in der Konfiguration eingestellten Minuten (standardmäßig 30).",
+        "es": "Un mercado añadido a Gladys termina en los minutos ajustados en la configuración (30 por defecto)."
+      },
+      "fields": [
+        {
+          "key": "market",
+          "type": "multi_select",
+          "source": "devices",
+          "required": false,
+          "label": {
+            "en": "Markets",
+            "fr": "Marchés",
+            "de": "Märkte",
+            "es": "Mercados"
+          },
+          "description": {
+            "en": "Empty: any market added to Gladys.",
+            "fr": "Vide : n'importe quel marché ajouté à Gladys.",
+            "de": "Leer: jeder zu Gladys hinzugefügte Markt.",
+            "es": "Vacío: cualquier mercado añadido a Gladys."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "market_name",
+          "type": "string",
+          "label": {
+            "en": "Market",
+            "fr": "Marché",
+            "de": "Markt",
+            "es": "Mercado"
+          }
+        },
+        {
+          "key": "ends_at",
+          "type": "string",
+          "label": {
+            "en": "End time (HH:MM)",
+            "fr": "Heure de fin (HH:MM)",
+            "de": "Ende (HH:MM)",
+            "es": "Hora de fin (HH:MM)"
+          }
+        },
+        {
+          "key": "minutes_left",
+          "type": "number",
+          "label": {
+            "en": "Minutes before the end",
+            "fr": "Minutes avant la fin",
+            "de": "Minuten bis zum Ende",
+            "es": "Minutos antes del fin"
+          }
+        }
+      ]
+    },
+    {
+      "key": "market_tomorrow",
+      "label": {
+        "en": "Market tomorrow",
+        "fr": "Marché demain",
+        "de": "Markt morgen",
+        "es": "Mercado mañana"
+      },
+      "description": {
+        "en": "The evening before a market day, at the hour set in the configuration (19:00 by default).",
+        "fr": "La veille d'un jour de marché, à l'heure réglée dans la configuration (19 h par défaut).",
+        "de": "Am Vorabend eines Markttags, zur in der Konfiguration eingestellten Stunde (standardmäßig 19 Uhr).",
+        "es": "La víspera de un día de mercado, a la hora ajustada en la configuración (19:00 por defecto)."
+      },
+      "fields": [
+        {
+          "key": "market",
+          "type": "multi_select",
+          "source": "devices",
+          "required": false,
+          "label": {
+            "en": "Markets",
+            "fr": "Marchés",
+            "de": "Märkte",
+            "es": "Mercados"
+          },
+          "description": {
+            "en": "Empty: any market added to Gladys.",
+            "fr": "Vide : n'importe quel marché ajouté à Gladys.",
+            "de": "Leer: jeder zu Gladys hinzugefügte Markt.",
+            "es": "Vacío: cualquier mercado añadido a Gladys."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "market_name",
+          "type": "string",
+          "label": {
+            "en": "Market",
+            "fr": "Marché",
+            "de": "Markt",
+            "es": "Mercado"
+          }
+        },
+        {
+          "key": "starts_at",
+          "type": "string",
+          "label": {
+            "en": "Start time (HH:MM)",
+            "fr": "Heure de début (HH:MM)",
+            "de": "Beginn (HH:MM)",
+            "es": "Hora de inicio (HH:MM)"
+          }
+        },
+        {
+          "key": "ends_at",
+          "type": "string",
+          "label": {
+            "en": "End time (HH:MM)",
+            "fr": "Heure de fin (HH:MM)",
+            "de": "Ende (HH:MM)",
+            "es": "Hora de fin (HH:MM)"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
+      "key": "markets_today",
+      "label": {
+        "en": "Markets today near me",
+        "fr": "Marchés aujourd'hui près de chez moi",
+        "de": "Märkte heute in meiner Nähe",
+        "es": "Mercados hoy cerca de mí"
+      },
       "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+        "en": "The markets held today near the house in a sentence ready to send: hours, open now, distance.",
+        "fr": "Les marchés du jour près de la maison en une phrase prête à envoyer : horaires, ouvert, distance.",
+        "de": "Die heutigen Märkte nahe dem Haus in einem Satz zum Verschicken: Zeiten, geöffnet, Entfernung.",
+        "es": "Los mercados de hoy cerca de la casa en una frase lista para enviar: horario, abierto, distancia."
       },
       "timeout_seconds": 15,
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ],
+      "fields": [],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "sentence",
+          "type": "string",
+          "label": {
+            "en": "Sentence",
+            "fr": "Phrase",
+            "de": "Satz",
+            "es": "Frase"
+          }
+        },
+        {
+          "key": "markets_count",
+          "type": "number",
+          "label": {
+            "en": "Markets today",
+            "fr": "Marchés aujourd'hui",
+            "de": "Märkte heute",
+            "es": "Mercados hoy"
+          }
+        },
+        {
+          "key": "open_count",
+          "type": "number",
+          "label": {
+            "en": "Markets open now",
+            "fr": "Marchés ouverts maintenant",
+            "de": "Jetzt geöffnete Märkte",
+            "es": "Mercados abiertos ahora"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "today",
+      "label": {
+        "en": "Markets today",
+        "fr": "Marchés du jour",
+        "de": "Märkte heute",
+        "es": "Mercados de hoy"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Today's markets around the house: open, until when, distance (10 at most).",
+        "fr": "Les marchés du jour autour de la maison : ouvert, jusqu'à quand, distance (10 au plus).",
+        "de": "Die heutigen Märkte rund ums Haus: geöffnet, bis wann, Entfernung (höchstens 10).",
+        "es": "Los mercados de hoy alrededor de la casa: abierto, hasta cuándo, distancia (10 como máximo)."
+      },
+      "icon": "shopping-bag",
+      "settings": [
+        {
+          "key": "show_distance",
+          "type": "boolean",
+          "default": true,
+          "required": false,
+          "label": {
+            "en": "Show the distance",
+            "fr": "Afficher la distance",
+            "de": "Entfernung anzeigen",
+            "es": "Mostrar la distancia"
+          }
+        }
+      ]
     }
   ]
 }
