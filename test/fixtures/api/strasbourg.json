@@ -1,0 +1,412 @@
+{
+  "total_count": 37,
+  "results": [
+    {
+      "nom_marche": "Producteurs",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Rue de la Douane",
+      "code4": "PROD-SA",
+      "geo_point_2d": {
+        "lon": 7.749719533974184,
+        "lat": 48.57957029725191
+      }
+    },
+    {
+      "nom_marche": "Livres",
+      "jour": "MA",
+      "heure": "de 9h à 19h",
+      "adresse": "Place Kléber",
+      "code4": "LIVR-MA",
+      "geo_point_2d": {
+        "lon": 7.745553452911693,
+        "lat": 48.58311968014558
+      }
+    },
+    {
+      "nom_marche": "Haldenbourg",
+      "jour": "VE",
+      "heure": "De 7h à 13h",
+      "adresse": "Place de Haldenbourg",
+      "code4": "HALD-VE",
+      "geo_point_2d": {
+        "lon": 7.712724337305247,
+        "lat": 48.60356534908279
+      }
+    },
+    {
+      "nom_marche": "Broglie",
+      "jour": "ME",
+      "heure": "de 7h à 13h",
+      "adresse": "Place Broglie",
+      "code4": "BROG-ME",
+      "geo_point_2d": {
+        "lon": 7.750215880567417,
+        "lat": 48.58495903997906
+      }
+    },
+    {
+      "nom_marche": "Brocante",
+      "jour": "SA",
+      "heure": "de 7h à 16h",
+      "adresse": "Place de l'Etal - Rue du Vieux Marché aux Poissons - Place de la Grande Boucherie",
+      "code4": "BROC-SA",
+      "geo_point_2d": {
+        "lon": 7.7500163876027415,
+        "lat": 48.580053527184155
+      }
+    },
+    {
+      "nom_marche": "Corps de Garde",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place du Corps de Garde",
+      "code4": "ROBE-JE",
+      "geo_point_2d": {
+        "lon": 7.7805196307596045,
+        "lat": 48.60025725352252
+      }
+    },
+    {
+      "nom_marche": "Neudorf",
+      "jour": "MA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place du Marché Neudorf",
+      "code4": "NEUD-MA",
+      "geo_point_2d": {
+        "lon": 7.760161553703311,
+        "lat": 48.56647525859643
+      }
+    },
+    {
+      "nom_marche": "Ile de France",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de l'Ile de France",
+      "code4": "PIDF-JE",
+      "geo_point_2d": {
+        "lon": 7.750504959620538,
+        "lat": 48.55026972286286
+      }
+    },
+    {
+      "nom_marche": "Fleurs",
+      "jour": "ME",
+      "heure": "de 9h à 19h",
+      "adresse": "Rue des Grandes Arcades",
+      "code4": "FLEU-ME",
+      "geo_point_2d": {
+        "lon": 7.747449099879913,
+        "lat": 48.582303704121195
+      }
+    },
+    {
+      "nom_marche": "Corps de Garde",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place du Corps de Garde",
+      "code4": "ROBE-SA",
+      "geo_point_2d": {
+        "lon": 7.7805196307596045,
+        "lat": 48.60025725352252
+      }
+    },
+    {
+      "nom_marche": "Marne",
+      "jour": "MA",
+      "heure": "de 7h à 13h",
+      "adresse": "Boulevard de la Marne",
+      "code4": "MARN-MA",
+      "geo_point_2d": {
+        "lon": 7.773721829343416,
+        "lat": 48.58436451298918
+      }
+    },
+    {
+      "nom_marche": "Montagne et Artisanat",
+      "jour": "SA",
+      "heure": "de 9h à 19h",
+      "adresse": "Place Kléber",
+      "code4": "MONT-SA",
+      "geo_point_2d": {
+        "lon": 7.746063444076976,
+        "lat": 48.583184786727216
+      }
+    },
+    {
+      "nom_marche": "Fleurs",
+      "jour": "SA",
+      "heure": "de 9h à 19h",
+      "adresse": "Rue des Grandes Arcades",
+      "code4": "FLEU-SA",
+      "geo_point_2d": {
+        "lon": 7.747449099879913,
+        "lat": 48.582303704121195
+      }
+    },
+    {
+      "nom_marche": "Kléber",
+      "jour": "ME",
+      "heure": "de 7h à 18h",
+      "adresse": "Place Kléber",
+      "code4": "KLEB-ME",
+      "geo_point_2d": {
+        "lon": 7.745726885120924,
+        "lat": 48.583373018328324
+      }
+    },
+    {
+      "nom_marche": "Brocante",
+      "jour": "ME",
+      "heure": "de 7h à 16h",
+      "adresse": "Place de l'Etal - Rue du Vieux Marché aux Poissons - Place de la Grande Boucherie",
+      "code4": "BROC-ME",
+      "geo_point_2d": {
+        "lon": 7.7500163876027415,
+        "lat": 48.580053527184155
+      }
+    },
+    {
+      "nom_marche": "Watteau",
+      "jour": "ME",
+      "heure": "de 7h à 13h",
+      "adresse": "Rue Watteau",
+      "code4": "WATT-ME",
+      "geo_point_2d": {
+        "lon": 7.725777879620518,
+        "lat": 48.5669350899993
+      }
+    },
+    {
+      "nom_marche": "Bordeaux",
+      "jour": "MA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de Bordeaux",
+      "code4": "BORD-MA",
+      "geo_point_2d": {
+        "lon": 7.758390037816195,
+        "lat": 48.59332465951335
+      }
+    },
+    {
+      "nom_marche": "Watteau",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Rue Watteau",
+      "code4": "WATT-SA",
+      "geo_point_2d": {
+        "lon": 7.725777879620518,
+        "lat": 48.5669350899993
+      }
+    },
+    {
+      "nom_marche": "Place d'Ostwald",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place d'Ostwald",
+      "code4": "OSTW-JE",
+      "geo_point_2d": {
+        "lon": 7.7068523293413085,
+        "lat": 48.564688426578876
+      }
+    },
+    {
+      "nom_marche": "Livres",
+      "jour": "SA",
+      "heure": "de 9h à 19h",
+      "adresse": "Place Kléber",
+      "code4": "LIVR-SA",
+      "geo_point_2d": {
+        "lon": 7.745553452911693,
+        "lat": 48.58311968014558
+      }
+    },
+    {
+      "nom_marche": "Neudorf",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place du Marché Neudorf",
+      "code4": "NEUD-SA",
+      "geo_point_2d": {
+        "lon": 7.760161553703311,
+        "lat": 48.56647525859643
+      }
+    },
+    {
+      "nom_marche": "Marne",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Boulevard de la Marne",
+      "code4": "MARN-SA",
+      "geo_point_2d": {
+        "lon": 7.773721829343416,
+        "lat": 48.58436451298918
+      }
+    },
+    {
+      "nom_marche": "Hautepierre",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place André Maurois",
+      "code4": "HAUT-SA",
+      "geo_point_2d": {
+        "lon": 7.697127720032154,
+        "lat": 48.59185154525728
+      }
+    },
+    {
+      "nom_marche": "Cité de l'Ill",
+      "jour": "ME",
+      "heure": "De 14h à 18h",
+      "adresse": "Rue de la Doller",
+      "code4": "CILL-ME",
+      "geo_point_2d": {
+        "lon": 7.7736216196104895,
+        "lat": 48.614101838761506
+      }
+    },
+    {
+      "nom_marche": "Hans Arp",
+      "jour": "ME",
+      "heure": "de 7h à 13h",
+      "adresse": "Place Hans Arp",
+      "code4": "HANS-ME",
+      "geo_point_2d": {
+        "lon": 7.736688386513073,
+        "lat": 48.58041876479851
+      }
+    },
+    {
+      "nom_marche": "Allée Reuss",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Allée Reuss",
+      "code4": "REUS-JE",
+      "geo_point_2d": {
+        "lon": 7.770700090190021,
+        "lat": 48.5441853748446
+      }
+    },
+    {
+      "nom_marche": "Altenheim",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Route d'Altenheim",
+      "code4": "ALTE-JE",
+      "geo_point_2d": {
+        "lon": 7.770138899774841,
+        "lat": 48.53715798064532
+      }
+    },
+    {
+      "nom_marche": "Virgile",
+      "jour": "VE",
+      "heure": "de 14h à 18h",
+      "adresse": "Rue Virgile",
+      "code4": "VIRG-VE",
+      "geo_point_2d": {
+        "lon": 7.702775151991559,
+        "lat": 48.581525089377685
+      }
+    },
+    {
+      "nom_marche": "Zurich",
+      "jour": "ME",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de Zurich",
+      "code4": "ZURI-ME",
+      "geo_point_2d": {
+        "lon": 7.756856702773328,
+        "lat": 48.5797548122264
+      }
+    },
+    {
+      "nom_marche": "Hans Arp",
+      "jour": "VE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place Hans Arp",
+      "code4": "HANS-VE",
+      "geo_point_2d": {
+        "lon": 7.736688386513073,
+        "lat": 48.58041876479851
+      }
+    },
+    {
+      "nom_marche": "Esplanade",
+      "jour": "LU",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de l'Esplanade",
+      "code4": "ESPL-LU",
+      "geo_point_2d": {
+        "lon": 7.769627460921818,
+        "lat": 48.57697394722868
+      }
+    },
+    {
+      "nom_marche": "Broglie",
+      "jour": "VE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place Broglie",
+      "code4": "BROG-VE",
+      "geo_point_2d": {
+        "lon": 7.750215880567417,
+        "lat": 48.58495903997906
+      }
+    },
+    {
+      "nom_marche": "Bordeaux",
+      "jour": "SA",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de Bordeaux",
+      "code4": "BORD-SA",
+      "geo_point_2d": {
+        "lon": 7.758390037816195,
+        "lat": 48.59332465951335
+      }
+    },
+    {
+      "nom_marche": "Livres",
+      "jour": "JE",
+      "heure": "de 9h à 19h",
+      "adresse": "Place Kléber",
+      "code4": "LIVR-JE",
+      "geo_point_2d": {
+        "lon": 7.745553452911693,
+        "lat": 48.58311968014558
+      }
+    },
+    {
+      "nom_marche": "Haldenbourg",
+      "jour": "ME",
+      "heure": "De 7h à 13h",
+      "adresse": "Place de Haldenbourg",
+      "code4": "HALD-ME",
+      "geo_point_2d": {
+        "lon": 7.712724337305247,
+        "lat": 48.60356534908279
+      }
+    },
+    {
+      "nom_marche": "Kléber",
+      "jour": "VE",
+      "heure": "de 7h à 18h",
+      "adresse": "Place Kléber",
+      "code4": "KLEB-VE",
+      "geo_point_2d": {
+        "lon": 7.745726885120924,
+        "lat": 48.583373018328324
+      }
+    },
+    {
+      "nom_marche": "Esplanade",
+      "jour": "JE",
+      "heure": "de 7h à 13h",
+      "adresse": "Place de l'Esplanade",
+      "code4": "ESPL-JE",
+      "geo_point_2d": {
+        "lon": 7.769627726605444,
+        "lat": 48.576973784876586
+      }
+    }
+  ]
+}

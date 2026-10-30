@@ -30,6 +30,13 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+The integration stores nothing in `/data` and holds no secret: no account, no
+API key. It reads the location of the Gladys house (`location: true`) only to
+compute distances inside the container; the coordinates are never sent
+anywhere. Its only network traffic is a daily HTTPS GET to three public open
+data portals (opendata.paris.fr, data.toulouse-metropole.fr,
+data.strasbourg.eu) and the WebSocket to Gladys.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and the open data portals the integration reads.

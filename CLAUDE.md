@@ -32,15 +32,22 @@ pushing.
 
 ```
 index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/app.js                        registers every SDK handler, shared by index.js and the tests
+src/service.js                    runtime: daily reads, house location, minute clock, states, triggers, texts
+src/sources.js                    the three open data sources, records turned into food markets, distances
+src/hours.js                      weekly days and hours, held today/open/next at an instant
+src/holidays.js                   French public holidays, offline (flagged, never assumed closed)
+src/clock.js                      dates and local time
+src/devices.js                    device of a market and its states
+src/messages.js                   every text sent by the container, in en/fr/de/es
+src/http.js                       fetch with timeout, size cap, Retry-After
+src/scenes.js                     scene action markets_today
+src/widgets.js                    dashboard widget today
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (mandatory)
 test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+test/fixtures/api                 real answers of the three sources (2026-10-30)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +77,8 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** is in English, French, German and Spanish: action
+  messages, manifest texts, and `docs/*.md`, kept in sync.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -251,3 +258,36 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Marchés (cette intégration)
+
+- **Sources retenues le 30/10/2026** (Opendatasoft v2.1, sans clé, une requête chacune, `select` limité) :
+  Paris (`marches-decouverts`, 80 lignes dont 72 alimentaires ; drapeaux `lundi`…`dimanche` à 0/1, une
+  paire d'horaires semaine `h_deb_sem_1`/`h_fin_sem_1`, une samedi, une dimanche ; id `id_marche` ; ODbL),
+  Toulouse (`marches-couverts-et-de-plein-vent`, ville seule, 58 lignes dont 45 alimentaires ; un texte
+  par jour, « 07h30 - 13h30 », « 7h-14h », « 16h00 – 20h00 » ; **pas d'id** : le nom en slug, unique chez
+  les alimentaires ; `code_postal` -9999 sur quelques lignes), Strasbourg
+  (`sites-marches-d-approvisionnement`, **une ligne par marché et par jour**, regroupées par le préfixe
+  de `code4` : `NEUD-MA` + `NEUD-SA` = marché `neud` ; « de 7h à 13h »).
+- **Écartées** : Rennes (`perimetre-marches` : lieux sans horaires), Nantes, Bordeaux, Lyon (rien avec
+  horaires sur leurs portails). Paris n'a pas de jeu pour ses marchés couverts.
+- **Alimentaire seulement** : Paris `produit` commençant par « Alimentaire » ; Toulouse `type` contenant
+  alimentaire, producteurs ou couvert ; Strasbourg hors codes `LIVR`, `FLEU`, `BROC`, `MONT`.
+- **Horaires** : semaine de 7 listes de créneaux (lundi d'abord). Un jour tenu dont l'horaire est
+  illisible (« 1er du mois », « 7h-19h30 été ») rend **tout** le marché illisible : jamais deviné, jamais
+  proposé, plus d'état binaire s'il était déjà ajouté.
+- **Jours fériés** : les sources n'en disent rien et beaucoup de marchés gardent leur jour : jamais
+  supposés fermés, seulement signalés (« jour férié : à vérifier ») dans la fin du jour, le prochain
+  marché et la phrase de scène.
+- **Autour de la maison** : `location: true`, `getHouses()` à chaque lecture ; maison localisée → les
+  trois sources lues, `max_distance` (5 km) borne les marchés proposés, le widget et la phrase. Sans
+  maison, widget et phrase se rabattent sur les marchés ajoutés à Gladys.
+- **Déclencheurs** : `opened`, `closing_soon` (seuil `closing_notice`), `market_tomorrow` au passage de
+  `evening_hour` la veille d'un jour tenu ; rien après un écart de plus de 5 min ni après un changement
+  des jours publiés (`signature`).
+- **Relecture du 30/10** : `\b` d'une regex JS ne connaît pas « é » (`/^marché\b/` ne trouve pas « Marché de ») :
+  `(?!\p{L})` avec le drapeau `u`. Lecture par pages de 100 (`offset`, 5 pages au plus) ; une réponse plus
+  courte que `total_count` reste un échec. Une ville lue seulement parce que la maison est localisée, mais à
+  plus de `max_distance` + 20 km de son centre, n'est ni relancée toutes les heures ni montrée dans « État ».
+  Widget et action de scène relisent la maison quand elle n'était pas localisée (sinon un jour d'attente) ; les
+  marchés ajoutés plus loin que `max_distance` suivent les marchés proches.

@@ -1,61 +1,145 @@
-# Demo Devices Template
+# Marchés
 
-This is the user documentation of the integration. Gladys re-hosts this file
-and shows a permanent **Documentation** link to it in the Configuration screen
-(in the user's language, with English as the fallback) — it is when
-configuring that the user needs it most. Keep the short onboarding hints in
-the `section` blocks of the manifest `config_schema`; put the long
-step-by-step (screenshots, troubleshooting…) here.
+The **food markets** (open-air, covered, organic, producers) **of Paris, Toulouse and Strasbourg** in
+Gladys: is there a market today, is it open now, until when, and when is the next market day. Days
+and hours come from the **open data** of the cities. **No account, no key.**
+
+> The cities publish a weekly rhythm only: public holidays, cancellations and exceptional days are
+> not published. Check before going, especially on a public holiday.
+
+Unofficial integration, not affiliated with the cities nor with the market operators. Tested against
+the real answers of the three sources (2026-10-30), not yet on a real Gladys instance: feedback
+welcome.
 
 ## What you get
 
-Six demo devices show up after installation: a weather station (real data
-from Open-Meteo), a switch, a dimmable light, a smart plug with power
-metering, a motion sensor and a camera.
+- A **device per market** you add: market today, open now, end time today, next market, market
+  days.
+- A **widget** "Markets today": today's markets around the house (10 at most, nearest first), green
+  when open, orange in the last half-hour, blue before they start, grey once over.
+- Three **scene triggers**: a market opens, a market ends soon (30 minutes by default), and "market
+  tomorrow" the evening before a market day (19:00 by default).
+- A **scene action** "Markets today near me": today's markets near the house in one sentence, with
+  their hours, whether they are open and how far they are.
+
+## Requirements
+
+- Gladys Assistant **5.3.0** or later.
+- Internet access from Gladys: the sources are public open data portals.
+- For the nearest markets, the widget and the scene sentence: the location of the house set in
+  Gladys (**Settings → Houses**).
+
+## Installation
+
+1. In Gladys, open **Integrations → Install from GitHub**.
+2. Paste `https://github.com/guim31/gladys-marches` and confirm.
+3. Gladys asks to share the location of the house: it is only used to find the nearest markets, and
+   never leaves your Gladys.
 
 ## Configuration
 
-1. Open the **Configuration** tab of the integration.
-2. Set the **latitude** and **longitude** the demo weather station should
-   observe (they default to Paris), and pick your temperature unit.
-   The **refresh interval** sets how often the weather station and the
-   plug's power are read: every 5 minutes by default, every minute at most.
-3. Save: the devices appear in the **Discovery** tab, ready to be added.
+### Settings
 
-The **Prefer the local connection** toggle drives the demo plug: it reports
-the channel it actually uses as a badge (local or cloud), with an orange dot
-when it runs degraded (local refused, cloud fallback).
+- **Cities**: every food market of the cities ticked is offered (Paris 72, Toulouse 45, Strasbourg
+  19).
+- **Nearest markets**: also offer this many markets nearest to the house (3 by default, 0 to turn
+  off), within the **maximum distance** (5 km as the crow flies by default). The same distance limits
+  the widget and the scene sentence.
+- **Ends soon (minutes)**: when the "Market ends soon" trigger fires (30 by default).
+- **"Market tomorrow" hour**: the hour of the evening before a market day when "Market tomorrow"
+  fires (19 by default).
+- **Language of names and messages**: French by default. Feature names are fixed when a device is
+  added; the texts follow the language at once.
 
-## Actions
+### Adding markets
 
-- **Test the weather provider** — performs a live request to Open-Meteo and
-  shows the current temperature and humidity under the button.
-- **Identify a device** — pick one of your devices in the list and it will
-  signal itself (the demo light "blinks" in the logs).
+Save the configuration: the markets appear in the **Discover** tab of the integration. Add the ones
+you go to. A market added stays watched even if you untick its city.
 
-## Scenes
+### Checking
 
-The integration adds its own cards to the scene editor (Gladys 5.1 or
-later), under the **Integrations** category:
+The **Status** button lists the cities read, the number of food markets, the markets offered, the
+last read and the errors.
 
-- **Motion detected** (trigger) — starts the scene when a demo motion sensor
-  sees something move. Optionally pick the sensor and what moved (person,
-  animal); left empty, any detection matches. The following actions can
-  read what moved with `{{triggerEvent.data.target}}`.
-- **Identify a device** (action) — makes the chosen device signal itself.
-  It returns whether the device could signal itself, so the following
-  actions can depend on it.
+## Devices
 
-## Dashboard
+| Feature        | Type   | Value                                                       |
+| -------------- | ------ | ----------------------------------------------------------- |
+| Market today   | binary | 1 when the market is held today                             |
+| Open now       | binary | 1 open, 0 not; no value when the hours cannot be read       |
+| End time today | text   | "13:30", "No market today", "13:30 (public holiday: check)" |
+| Next market    | text   | "today at 16:00", "tomorrow at 07:00", "Saturday at 07:30"  |
+| Market days    | text   | "Wed 07:00–13:30 · Sat 07:00–14:30"                         |
 
-Add the **Demo status** widget to a dashboard: it shows the live
-temperature of the weather station and the power of the office plug, the
-connection the plug currently uses (orange when degraded) and the observed
-location. Its **Identify the light** button makes the demo light signal
-itself.
+The values are computed every minute by the integration, without any request.
+
+## Dashboard widget
+
+Add the **Markets today** widget to a dashboard: one row per market held today around the house (10
+at most, nearest first), with "open until 13:30 · 0.4 km", "ends in 20 min", "from 16:00" or "ended
+at 13:30". The markets added to Gladys farther away follow the near ones; without a located house, it shows the markets added to Gladys. The setting **Show the
+distance** hides the distance.
+
+## Scene triggers
+
+- **Market opens**: variables `market_name`, `ends_at`.
+- **Market ends soon**: as many minutes before the end as set in the configuration; variables
+  `market_name`, `ends_at`, `minutes_left`.
+- **Market tomorrow**: the evening before a market day, at the configured hour; variables
+  `market_name`, `starts_at`, `ends_at`.
+
+Each trigger can be limited to some markets; empty, any market added fires it. After a long pause
+(the computer asleep, Gladys stopped), no late trigger is fired.
+
+## Scene action
+
+**Markets today near me** returns `sentence` ("Markets today near you: Marché Victor Hugo
+(07:00–13:30, open, 0.3 km), …"), `markets_count` and `open_count`. Without a located house, the
+sentence lists the markets added to Gladys held today. Send it in a message or to a speaker, or
+continue only if `markets_count` is above 0.
+
+## Scene examples
+
+- Saturday at 8:00, send "Markets today near me" to your phone.
+- "Market tomorrow" on Friday evening: a reminder to take the shopping bags.
+- "Market ends soon" while you are out: last chance for fresh bread.
+
+## Data and refresh
+
+| City       | Source                                                          | Food markets | Licence         |
+| ---------- | --------------------------------------------------------------- | ------------ | --------------- |
+| Paris      | opendata.paris.fr, `marches-decouverts`                         | 72           | ODbL            |
+| Toulouse   | data.toulouse-metropole.fr, `marches-couverts-et-de-plein-vent` | 45           | Licence Ouverte |
+| Strasbourg | data.strasbourg.eu, `sites-marches-d-approvisionnement`         | 19           | Licence Ouverte |
+
+- Each city is one request **once a day** (an hour later after a failure), only for the cities
+  needed; all three when the house is located. Everything else is computed every minute from the
+  days kept, in the time zone of Paris.
+- Only food markets are kept: flower, book, flea, stamp and craft markets are left out.
+- Public holidays are computed offline (Alsace-Moselle included) and only flagged: many markets keep
+  their day, the sources do not say which.
 
 ## Troubleshooting
 
-The integration logs everything it does: check the integration logs from the
-Gladys UI (or `docker logs` on the host) with `LOG_LEVEL=debug` for the full
-detail.
+- **Nothing in the Discover tab**: tick a city, or set the location of the house and keep "Nearest
+  markets" above 0. The **Status** button says which.
+- **The widget says there is no market**: none of the markets within the maximum distance is held
+  today; raise the distance if needed.
+- **"Hours not readable"**: the source published hours this integration does not read (it never
+  guesses): tell us on the forum.
+- **A city is unavailable**: the last days read are kept; it is tried again an hour later.
+- Logs: in the integration screen, or `LOG_LEVEL=debug` for every read.
+
+## Limitations
+
+- Three cities only: Lyon, Bordeaux, Nantes, Rennes and the others publish no market days and hours
+  as open data today. Tell us about another source.
+- The Toulouse dataset covers the city of Toulouse, not the whole metropolitan area; its markets have
+  no id, so the name serves as one.
+- Paris covers its open-air markets; its covered markets are not in the dataset.
+- Developed without visiting the markets: feedback welcome.
+
+## Credits
+
+Data: Ville de Paris (ODbL), Mairie de Toulouse and Ville et Eurométropole de Strasbourg (Licence
+Ouverte). Built on the [Gladys integration SDK](https://github.com/GladysAssistant/integration-sdk-js).
